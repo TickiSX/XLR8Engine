@@ -1,7 +1,21 @@
 #pragma once
+
+//LIBRERIASSTD
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <thread>
+#include <map>
+#include <fstream>
+#include <unordered_map>
+
+//THIRD PARTIES
 #include <SFML/Graphics.hpp>
 
-// MACRO for safe release of resources
+//INGUI
+
+//MACRO FOR SAFE RELEASE OF SRC
 #define SAFE_PTR_RELEASE(x) if(x != nullptr) { delete x; x = nullptr; }
 
 #define MESSAGE(classObj, method, state)                      \
@@ -20,3 +34,13 @@
     std::cerr << os_.str();                                       \
     exit(1);                                                      \
 }
+
+//ENUMS
+enum
+ShapeType {
+    EMPTY = 0,
+    CIRCLE = 1,
+    RECTANGLE = 2,
+    TRIANGLE = 3,
+    POLYGON = 4,
+};
