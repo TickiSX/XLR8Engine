@@ -1,13 +1,19 @@
 #include "../include/BaseApp.h"
 
 /**
- * @brief Punto de entrada principal de la aplicación.
- *
- * Crea una instancia de BaseApp, la inicializa y ejecuta el bucle principal.
- *
- * @return Código de salida de la aplicación.
+ * @file main.cpp
+ * @brief Entry point of the application.
  */
-int main() {
-    BaseApp app;
-    return app.run();
+
+ /**
+  * @brief Main function that initializes and runs the application.
+  *
+  * Creates an instance of the BaseApp class and calls its run method to start the application loop.
+  *
+  * @return int Exit status of the application. Returns 0 on successful execution.
+  */
+int
+main() {
+	BaseApp app;
+	return app.run();
 }

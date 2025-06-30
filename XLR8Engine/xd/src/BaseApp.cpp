@@ -1,29 +1,35 @@
-#include "../include/Prerequisites.h"
 #include "../include/BaseApp.h"
 
-/// Destructor de BaseApp
+/**
+ * @file BaseApp.cpp
+ * @brief Implements the BaseApp class which manages the main application loop.
+ */
+
+ /**
+  * @brief Destructor for BaseApp.
+  *
+  * Currently empty, as resources are freed in the destroy() method.
+  */
 BaseApp::~BaseApp() {
-    // Liberar recursos si aún no fueron liberados explícitamente
-    SAFE_PTR_RELEASE(m_circle);
-    if (m_window) {
-        m_window->destroy();
-        SAFE_PTR_RELEASE(m_window);
-    }
 }
 
 /**
- * @brief Método principal de ejecución.
- * Inicializa la aplicación y entra en el bucle principal hasta que la ventana se cierre.
+ * @brief Starts the main loop of the application.
  *
- * @return Código de salida (0 si se ejecuta correctamente).
+ * Initializes the application, enters the main loop where events are handled, and updates and renders
+ * the application. Finally, it calls destroy() to release resources.
+ *
+ * @return int Returns 0 on successful execution.
  */
-int BaseApp::run() {
+int
+BaseApp::run() {
     if (!init()) {
-        ERROR("BaseApp", "run", "Initialization failed; check method validations");
+        ERROR("BaseApp", "run", "Initializes result on a false statement",
+            "check method validations");
     }
 
-    while (m_window->isOpen()) {
-        m_window->handleEvents();
+    while (m_windowPtr->isOpen()) {
+        m_windowPtr->handleEvents();
         update();
         render();
     }
@@ -33,48 +39,63 @@ int BaseApp::run() {
 }
 
 /**
- * @brief Inicializa recursos de la aplicación.
- * Crea la ventana y un círculo verde con radio 100.
+ * @brief Initializes the application resources.
  *
- * @return true si la inicialización fue exitosa.
+ * Creates the window and sets up a simple yellow circle shape.
+ *
+ * @return true if initialization succeeds.
  */
-bool BaseApp::init() {
-    m_window = new Window(1920, 1080, "Graphos");
-    m_circle = new sf::CircleShape(100.0f);
-    m_circle->setFillColor(sf::Color::Green);
-    m_circle->setPosition(200.f, 150.f);
+bool
+BaseApp::init() {
+    m_windowPtr = EngineUtilities::MakeShared<Window>(1920, 1080, "Onigiri Engine");
+    if (!m_windowPtr) {
+        ERROR("BaseApp", "init", "Failed to create window pointer, check memory allocation");
+        return false;
+    }
 
-    MESSAGE("BaseApp", "init", "Window and CircleShape created successfully");
+    m_shapePtr = EngineUtilities::MakeShared<CShape>();
+    if (m_shapePtr) {
+        m_shapePtr->createShape(ShapeType::TRIANGLE);
+        m_shapePtr->setFillColor(sf::Color::Yellow);
+        m_shapePtr->setPosition(200.f, 150.f);
+    }
+
     return true;
 }
 
 /**
- * @brief Lógica de actualización por frame.
- * Se puede extender en clases derivadas.
+ * @brief Updates the application state.
+ *
+ * Empty for now. Intended for game logic or state updates.
  */
-void BaseApp::update() {
-    // Lógica por frame (por ahora vacía)
+void
+BaseApp::update() {
 }
 
 /**
- * @brief Dibuja los elementos del frame actual.
- * Limpia la ventana, dibuja el círculo y muestra el frame.
+ * @brief Renders the current frame.
+ *
+ * Clears the screen, draws the circle shape, and displays the result.
  */
-void BaseApp::render() {
-    m_window->clear();
-    m_window->draw(*m_circle);
-    m_window->display();
-}
-
-/**
- * @brief Libera los recursos utilizados por la aplicación.
- */
-void BaseApp::destroy() {
-    SAFE_PTR_RELEASE(m_circle);
-    if (m_window) {
-        m_window->destroy();
-        SAFE_PTR_RELEASE(m_window);
+void
+BaseApp::render() {
+    if (!m_windowPtr) {
+        return;
     }
+    m_windowPtr->clear();
+    if (m_shapePtr) {
+        m_shapePtr->render(m_windowPtr);
+    }
+    m_windowPtr->display();
+}
 
-    MESSAGE("BaseApp", "destroy", "Resources successfully released");
+/**
+ * @brief Releases allocated resources.
+ *
+ * Deletes the shape and properly destroys the window.
+ */
+void
+BaseApp::destroy() {
+    // m_shapePtr.Reset(); // Not necessary if using smart pointers correctly
+    // m_windowPtr.Reset(); // Cleanup handled automatically
 }

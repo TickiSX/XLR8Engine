@@ -1,19 +1,29 @@
 #include "../include/Window.h"
+#include "../include/BaseApp.h"
 
 /**
- * @brief Constructor de la clase Window.
- * Inicializa una ventana SFML con los parámetros dados.
+ * @class Window
  *
- * @param width Ancho de la ventana.
- * @param height Alto de la ventana.
- * @param title Título de la ventana.
+ * @brief Encapsulates an SFML window, handling creation, events, rendering, and destruction.
  */
-Window::Window(int width, int height, const std::string& title) {
-    m_window = new sf::RenderWindow(sf::VideoMode(width, height), title);
 
-    if (m_window) {
-        m_window->setFramerateLimit(60);
-        MESSAGE("Window", "Window", "window created successfully");
+ /**
+  * @brief Constructs a new Window object.
+  *
+  * Initializes an SFML render window with the specified width, height, and title.
+  * It also sets the framerate limit and verifies successful creation.
+  *
+  * @param width Width of the window in pixels.
+  * @param height Height of the window in pixels.
+  * @param title Title of the window.
+  */
+Window::Window(int width, int height, const std::string& title) {
+    m_windowPtr = EngineUtilities::MakeUnique<sf::RenderWindow>(
+        sf::VideoMode(width, height), title);
+
+    if (!m_windowPtr.isNull()) {
+        m_windowPtr->setFramerateLimit(60);
+        MESSAGE("Window", "Window", "Window created successfully");
     }
     else {
         ERROR("Window", "Window", "Failed to create window");
@@ -21,32 +31,34 @@ Window::Window(int width, int height, const std::string& title) {
 }
 
 /**
- * @brief Destructor. Libera la memoria de la ventana.
+ * @brief Destroys the Window object and safely releases its resources.
  */
 Window::~Window() {
-    SAFE_PTR_RELEASE(m_window);
+    m_windowPtr.release();
 }
 
 /**
- * @brief Maneja los eventos de la ventana (por ahora solo el cierre).
+ * @brief Handles window events such as closing.
+ *
+ * Processes the event queue to detect and handle user actions like closing the window.
  */
 void Window::handleEvents() {
-    sf::Event event;
-    while (m_window->pollEvent(event)) {
+    sf::Event; std::ios_base::event;
+    while (m_windowPtr->pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
-            m_window->close();
+            m_windowPtr->close();
         }
     }
 }
 
 /**
- * @brief Verifica si la ventana sigue abierta.
+ * @brief Checks if the window is currently open.
  *
- * @return true si está abierta, false si no.
+ * @return true if the window is open, false otherwise.
  */
 bool Window::isOpen() const {
-    if (m_window) {
-        return m_window->isOpen();
+    if (!m_windowPtr.isNull()) {
+        return m_windowPtr->isOpen();
     }
     else {
         ERROR("Window", "isOpen", "Window is null");
@@ -55,13 +67,13 @@ bool Window::isOpen() const {
 }
 
 /**
- * @brief Limpia el buffer de color de la ventana.
+ * @brief Clears the window with a specific background color.
  *
- * @param color Color a usar para limpiar.
+ * @param color The color to use when clearing the window.
  */
 void Window::clear(const sf::Color& color) {
-    if (m_window) {
-        m_window->clear(color);
+    if (!m_windowPtr.isNull()) {
+        m_windowPtr->clear(color);
     }
     else {
         ERROR("Window", "clear", "Window is null");
@@ -69,14 +81,14 @@ void Window::clear(const sf::Color& color) {
 }
 
 /**
- * @brief Dibuja un objeto SFML en la ventana.
+ * @brief Draws a drawable object to the window using specified render states.
  *
- * @param drawable Objeto SFML que se puede dibujar.
- * @param states Estados de renderizado (por defecto).
+ * @param drawable The SFML drawable object to render.
+ * @param states Optional render states to apply to the drawable.
  */
 void Window::draw(const sf::Drawable& drawable, const sf::RenderStates& states) {
-    if (m_window) {
-        m_window->draw(drawable, states);
+    if (!m_windowPtr.isNull()) {
+        m_windowPtr->draw(drawable, states);
     }
     else {
         ERROR("Window", "draw", "Window is null");
@@ -84,11 +96,11 @@ void Window::draw(const sf::Drawable& drawable, const sf::RenderStates& states) 
 }
 
 /**
- * @brief Muestra el contenido de la ventana en pantalla.
+ * @brief Displays the contents of the current frame on the screen.
  */
 void Window::display() {
-    if (m_window) {
-        m_window->display();
+    if (!m_windowPtr.isNull()) {
+        m_windowPtr->display();
     }
     else {
         ERROR("Window", "display", "Window is null");
@@ -96,8 +108,8 @@ void Window::display() {
 }
 
 /**
- * @brief Destruye la ventana y libera recursos.
+ * @brief Destroys the window and releases its resources safely.
  */
 void Window::destroy() {
-    SAFE_PTR_RELEASE(m_window);
+    m_windowPtr.release();
 }

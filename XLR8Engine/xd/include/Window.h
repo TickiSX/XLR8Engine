@@ -1,86 +1,93 @@
 #pragma once
 #include "Prerequisites.h"
+#include "Memory/TSharedPointer.h"
+#include "Memory/TUniquePtr.h"
+
 
 /**
- * @class Window
- * @brief Encapsula una ventana renderizable usando SFML.
- *
- * La clase Window abstrae una ventana de SFML y proporciona
- * funciones para manejo de eventos, dibujo y administración del ciclo de vida.
- *
- * Uso típico:
- *  - Crear una instancia con el constructor parametrizado.
- *  - Llamar a handleEvents() cada frame para procesar eventos.
- *  - Llamar a draw(), clear() y display() durante el render loop.
- *  - Llamar a destroy() antes de cerrar la aplicación.
+ * @file Window.h
+ * @brief Declares the Window class, a wrapper for managing an SFML RenderWindow.
  */
-class Window
-{
+
+ /**
+  * @class Window
+  * @brief Encapsulates an SFML window, handling initialization, events, rendering, and cleanup.
+  */
+class
+    Window {
 public:
     /**
-     * @brief Constructor por defecto.
-     * Crea una instancia sin inicializar la ventana.
+     * @brief Default constructor.
+     *
+     * Does not create a window. Use this only if you plan to initialize the window later.
      */
     Window() = default;
 
     /**
-     * @brief Constructor con parámetros.
-     * Inicializa la ventana con el tamaño y título especificados.
+     * @brief Constructs and initializes a new window.
      *
-     * @param width Ancho de la ventana.
-     * @param height Alto de la ventana.
-     * @param title Título de la ventana.
+     * @param width Width of the window in pixels.
+     * @param height Height of the window in pixels.
+     * @param title Title of the window.
      */
     Window(int width, int height, const std::string& title);
 
     /**
-     * @brief Destructor.
-     * Libera recursos utilizados por la ventana.
+     * @brief Destructor. Releases any allocated resources.
      */
     ~Window();
 
     /**
-     * @brief Procesa los eventos de la ventana.
-     * Llama internamente a pollEvent() de SFML.
-     */
-    void handleEvents();
-
-    /**
-     * @brief Verifica si la ventana sigue abierta.
+     * @brief Handles window events (e.g., close, input).
      *
-     * @return true si la ventana está abierta, false si fue cerrada.
+     * Processes all SFML events in the queue.
      */
-    bool isOpen() const;
+    void
+        handleEvents();
 
     /**
-     * @brief Limpia el contenido actual del buffer.
+     * @brief Checks if the window is currently open.
      *
-     * @param color Color de limpieza, por defecto negro opaco.
+     * @return true if the window is open, false otherwise.
      */
-    void clear(const sf::Color& color = sf::Color(0, 0, 0, 255));
+    bool
+        isOpen() const;
 
     /**
-     * @brief Dibuja un objeto drawable en la ventana.
+     * @brief Clears the window with a specified color.
      *
-     * @param drawable Referencia al objeto drawable (ej. sf::Shape, sf::Sprite, etc).
-     * @param states Estados de render opcionales.
+     * @param color The color used to clear the screen. Defaults to black.
      */
-    void draw(const sf::Drawable& drawable, const sf::RenderStates& states = sf::RenderStates::Default);
+    void
+        clear(const sf::Color& color = sf::Color(0, 0, 0, 255));
 
     /**
-     * @brief Muestra en pantalla el contenido del buffer.
-     * Llame a esto después de dibujar todos los elementos del frame.
+     * @brief Draws a renderable object to the window.
+     *
+     * @param drawable The object to draw (e.g., shape, sprite, text).
+     * @param states Optional render states. Defaults to sf::RenderStates::Default.
      */
-    void display();
+    void
+        draw(const sf::Drawable& drawable,
+            const sf::RenderStates& states = sf::RenderStates::Default);
 
     /**
-     * @brief Libera todos los recursos asociados con la ventana.
+     * @brief Displays the contents of the window.
+     *
+     * Should be called after drawing all objects for the current frame.
      */
-    void destroy();
+    void
+        display();
+
+    /**
+     * @brief Releases the window resources.
+     *
+     * Properly deletes the internal SFML window pointer.
+     */
+    void
+        destroy();
 
 private:
-    /**
-     * @brief Puntero a la ventana SFML.
-     */
-    sf::RenderWindow* m_window;
+    EngineUtilities::TUniquePtr<sf::RenderWindow> m_windowPtr; ///< Unique pointer to the SFML render window.
+    sf::View m_view; ///< View used for rendering (not currently exposed).
 };
