@@ -14,7 +14,12 @@
 #include <map>          ///< Sorted associative container.
 #include <fstream>      ///< File input/output.
 #include <unordered_map>///< Hash table-based associative container.
-#include <memory>       ///< Smart pointers (std::unique_ptr, std::shared_ptr).
+
+#include <Memory/TSharedPointer.h>
+#include <Memory/TStaticPtr.h>
+#include <Memory/TUniquePtr.h>
+
+
 
 // === Third Party Libraries ===
 #include <SFML/Graphics.hpp> ///< SFML graphics module.
@@ -66,4 +71,11 @@
     * @enum ShapeType
     * @brief Types of shapes that can be created in the system.
     */
-enum Shap
+enum
+    ShapeType {
+    EMPTY = 0,    ///< No shape.
+    CIRCLE = 1,   ///< Circle shape.
+    RECTANGLE = 2,///< Rectangle shape.
+    TRIANGLE = 3, ///< Triangle shape using a convex polygon.
+    POLYGON = 4   ///< General polygon with 5 or more points.
+};

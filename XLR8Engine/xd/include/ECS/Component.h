@@ -1,36 +1,65 @@
 #pragma once
+#include "../Prerequisites.h"
+#include "Component.h"
 
-#include <memory>  ///< Para std::shared_ptr
-#include "Actor.h" ///< Asegúrate de tener la clase Actor declarada
+class window;
 
-/**
- * @class Component
- * @brief Clase base para todos los componentes del motor.
- */
-class Component
-{
+class
+    Entity {
 public:
-    Component() = default;
-    virtual ~Component() = default;
+
+
+    virtual
+        ~Entity() = default;
 
     /**
-     * @brief Actualiza el componente.
-     * @param deltaTime Tiempo transcurrido desde el último frame.
+     * @brief Pure virtual method for initialization logic.
+     * @param deltaTime Time elapsed since last frame (used for time-dependent setup).
      */
-    virtual void Update(float deltaTime) = 0;
+    virtual void
+        start() = 0;
 
     /**
-     * @brief Establece el actor al que pertenece este componente.
-     * @param actor Puntero al actor.
+     * @brief Pure virtual method for updating logic every frame.
+     * @param deltaTime Time elapsed since last frame.
      */
-    void SetOwner(std::shared_ptr<Actor> actor) { owner_ = actor; }
+    virtual void
+        update(float deltaTime) = 0;
 
     /**
-     * @brief Devuelve el actor dueño del componente.
-     * @return std::shared_ptr<Actor>
+     * @brief Pure virtual method for rendering the component.
+     * @param window Smart pointer to the window where rendering occurs.
      */
-    std::shared_ptr<Actor> GetOwner() const { return owner_; }
+    virtual void
+        render(const EngineUtilities::TSharedPointer<Window>& window) = 0;
+
+    /**
+     * @brief Pure virtual method for cleaning up resources.
+     */
+    virtual void
+        destroy() = 0;
+
+
+    template<typename T>
+    void addComponent(EngineUtilities::TSharedPointer<T> component) {
+        static_assert(std::is_base_of<Component, T>::value, "T must be derived from Component");
+        components.push_back(component.template dynamic_pointer_cast<Component>());
+    }
+
+    template<typename T>
+    EngineUtilities::TSharedPointer<T>
+        getComponent() {
+        for (auto& component : components) {
+            EngineUtilities::TSharedPointer<T> specificComponent = component.template dynamic_pointer_cast<T>();
+            if (specificComponent) {
+                return specificComponent;
+            }
+        }
+        return EngineUtilities::TSharedPointer<T>();
+    }
 
 protected:
-    std::shared_ptr<Actor> owner_; ///< Actor dueño del componente.
+    bool isActive;
+    uint32_t id;
+    std::vector<EngineUtilities::TSharedPointer<Component>> components;
 };

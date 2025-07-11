@@ -68,5 +68,8 @@
     <ClInclude Include="..\include\ECS\Transform.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CVector2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

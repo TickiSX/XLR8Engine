@@ -1,5 +1,5 @@
-#include "../include/Window.h"
-#include "../include/BaseApp.h"
+#include "Window.h"
+#include <BaseApp.h>
 
 /**
  * @class Window
@@ -43,7 +43,7 @@ Window::~Window() {
  * Processes the event queue to detect and handle user actions like closing the window.
  */
 void Window::handleEvents() {
-    sf::Event; std::ios_base::event;
+    sf::Event event;
     while (m_windowPtr->pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             m_windowPtr->close();

@@ -1,37 +1,41 @@
 #pragma once
+#include "../Prerequisites.h"
+#include "Entity.h"
+#include "CShape.h"
+#include "Transform.h"
 
-#include <memory> ///< Para std::shared_ptr
-#include <string> ///< Para std::string
-#include "Transform.h" ///< Asegúrate de tener tu clase Transform aquí
-
-/**
- * @class Actor
- * @brief Clase base para todos los objetos que pueden ser colocados en la escena.
- */
-class Actor
-{
+class
+    Actor : public Entity {
 public:
-    Actor();
-    virtual ~Actor();
+    Actor() = default;
+    Actor(const std::string& actorName);
 
-    /**
-     * @brief Actualiza el actor.
-     * @param deltaTime Tiempo transcurrido desde el último frame.
-     */
-    virtual void Update(float deltaTime) = 0;
+    virtual
+        ~Actor() = default;
 
-    /**
-     * @brief Devuelve el nombre del actor.
-     * @return Nombre como std::string.
-     */
-    virtual std::string GetName() const = 0;
+    void
+        start() override;
 
-    /**
-     * @brief Devuelve el transform del actor.
-     * @return std::shared_ptr<Transform>.
-     */
-    std::shared_ptr<Transform> GetTransform() const { return transform_; }
+    void
+        update(float deltaTime) override;
 
-protected:
-    std::shared_ptr<Transform> transform_; ///< Transformación del actor.
+    void
+        render(const EngineUtilities::TSharedPointer<Window>& window) override;
+
+    void
+        destroy() override;
+
+private:
+    std::string m_name = "Actor";
+
+    template <typename T>
+    inline EngineUtilities::TSharedPointer<T> getComponents() {
+        for (auto& component : components) {
+            EngineUtilities::TSharedPointer<T> specificComponent = component.template dynamic_pointer_cast<T>();
+            if (specificComponent) {
+                return specificComponent;
+            }
+        }
+        return EngineUtilities::TSharedPointer<T>();
+    }
 };

@@ -1,66 +1,51 @@
 ﻿#pragma once
 
 /**
- * @file BaseApp.h
- * @brief Defines the BaseApp class, which manages the main application loop and rendering.
+ * @file CShape.h
+ * @brief Declares the CShape class used to represent 2D shapes as components in the ECS system.
  */
 
 #include "Prerequisites.h"
-#include <Window.h>
-#include "CShape.h" // Agregado para que coincida con el c�digo del profesor
+#include "ECS/Component.h"
 
- /**
-  * @class BaseApp
-  * @brief Core application class that controls initialization, the main loop, rendering, and cleanup.
-  */
-class
-    BaseApp {
+class Window;
+
+/**
+ * @class CShape
+ * @brief A component that represents a drawable 2D shape using SFML.
+ *
+ * Supports circle, rectangle, triangle, and polygon shapes.
+ */
+class CShape : public Component {
 public:
-    /**
-     * @brief Default constructor.
-     */
-    BaseApp() = default;
+  /**
+   * @brief Default constructor.
+   */
+  CShape();
 
-    /**
-     * @brief Destructor that handles cleanup.
-     */
-    ~BaseApp();
+  CShape(ShapeType shapeType);
 
-    /**
-     * @brief Runs the application.
-     *
-     * This method initializes the application, enters the main loop, and calls update/render methods.
-     * @return Exit code of the application.
-     */
-    int
-        run();
+  /**
+   * @brief Destructor.
+   */
+  virtual ~CShape() = default;
 
-    /**
-     * @brief Initializes the application window and objects.
-     * @return True if initialization was successful, false otherwise.
-     */
-    bool
-        init();
+  // M�todos de ciclo de vida
+  void start() override;
+  void update(float deltaTime) override;
+  void render(const EngineUtilities::TSharedPointer<Window>& window) override;
+  void destroy() override;
 
-    /**
-     * @brief Updates the application logic (called every frame).
-     */
-    void
-        update();
-
-    /**
-     * @brief Renders all drawable objects to the screen.
-     */
-    void
-        render();
-
-    /**
-     * @brief Releases all allocated resources and cleans up.
-     */
-    void
-        destroy();
+  // Creaci�n y manipulaci�n de forma
+  void createShape(ShapeType shapeType);
+  void setPosition(float x, float y);
+  void setPosition(const sf::Vector2f& position);
+  void setFillColor(const sf::Color& color);
+  void SetRotation(float angle);
+  void setScale(const sf::Vector2f& scl);
 
 private:
-    EngineUtilities::TSharedPointer<Window> m_windowPtr;   ///< Pointer to custom Window class using smart pointer.
-    EngineUtilities::TSharedPointer<CShape> m_shapePtr;    ///< Pointer to custom shape class using smart pointer.
+  EngineUtilities::TSharedPointer<sf::Shape> m_shapePtr; ///< Smart pointer a la forma SFML.
+  ShapeType m_shapeType = ShapeType::EMPTY;              ///< Tipo de forma actual.
+  sf::VertexArray* m_line = nullptr;                     ///< (opcional) l�nea si decides usar v�rtices.
 };

@@ -38,6 +38,7 @@
     <ClInclude Include="..\include\Memory\TWeakPointer.h" />
     <ClInclude Include="..\include\Prerequisites.h" />
     <ClInclude Include="..\include\Window.h" />
+    <ClInclude Include="CVector2.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
